@@ -176,7 +176,9 @@ where
     pub fn decode(input: &str) -> Result<Claims<T>> {
         let segments: Vec<&str> = input.split('.').collect();
         if segments.len() != 3 {
-            return Err(errors::new(errors::ErrorKind::Token(input.into())));
+            return Err(errors::new(errors::ErrorKind::Token(
+                "invalid token format".into(),
+            )));
         }
         let claims: Claims<T> = from_jwt_segment(segments[1])?;
 
@@ -768,7 +770,7 @@ mod test {
         assert!(decoded.is_err());
         if let Err(e) = decoded {
             match e.kind() {
-                ErrorKind::Token(s) => assert_eq!(s, &encoded_nosep),
+                ErrorKind::Token(s) => assert_eq!(s, "invalid token format"),
                 _ => {
                     panic!("failed to assert errors::ErrorKind::Token");
                 }
