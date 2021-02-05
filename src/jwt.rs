@@ -804,7 +804,7 @@ mod test {
             id: nuid::next(),
             metadata: Some(Invocation::new(
                 "wasmbus://M1234/DeliverMessage",
-                "wasmbus://wascc/messaging/default",
+                "wasmbus://wasmcloud/messaging/default",
                 "abc",
             )),
             expires: None,
@@ -933,8 +933,8 @@ mod test {
             .issuer(&account.public_key())
             .with_metadata(CapabilityProvider::new(
                 "Test Provider".to_string(),
-                "wascc:testing".to_string(),
-                "waSCC Internal".to_string(),
+                "wasmcloud:testing".to_string(),
+                "wasmCloud Internal".to_string(),
                 Some(1),
                 Some("v0.0.1".to_string()),
                 hashes,
@@ -946,8 +946,14 @@ mod test {
         assert!(validate_token::<CapabilityProvider>(&encoded).is_ok());
         assert_eq!(decoded.issuer, account.public_key());
         assert_eq!(decoded.subject, provider.public_key());
-        assert_eq!(decoded.metadata.as_ref().unwrap().vendor, "waSCC Internal");
-        assert_eq!(decoded.metadata.as_ref().unwrap().capid, "wascc:testing");
+        assert_eq!(
+            decoded.metadata.as_ref().unwrap().vendor,
+            "wasmCloud Internal"
+        );
+        assert_eq!(
+            decoded.metadata.as_ref().unwrap().capid,
+            "wasmcloud:testing"
+        );
     }
 
     #[test]
