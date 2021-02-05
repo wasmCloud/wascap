@@ -13,14 +13,14 @@
 // limitations under the License.
 
 //! A set of standard names for capabilities that can be provided by a host
-pub const MESSAGING: &str = "wascc:messaging";
-pub const KEY_VALUE: &str = "wascc:keyvalue";
-pub const HTTP_SERVER: &str = "wascc:http_server";
-pub const HTTP_CLIENT: &str = "wascc:http_client";
-pub const BLOB: &str = "wascc:blobstore";
-pub const EVENTSTREAMS: &str = "wascc:eventstreams";
-pub const EXTRAS: &str = "wascc:extras";
-pub const LOGGING: &str = "wascc:logging";
+pub const MESSAGING: &str = "wasmcloud:messaging";
+pub const KEY_VALUE: &str = "wasmcloud:keyvalue";
+pub const HTTP_SERVER: &str = "wasmcloud:http_server";
+pub const HTTP_CLIENT: &str = "wasmcloud:http_client";
+pub const BLOB: &str = "wasmcloud:blobstore";
+pub const EVENTSTREAMS: &str = "wasmcloud:eventstreams";
+pub const EXTRAS: &str = "wasmcloud:extras";
+pub const LOGGING: &str = "wasmcloud:logging";
 
 use std::collections::HashMap;
 

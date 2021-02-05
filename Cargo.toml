@@ -1,11 +1,11 @@
 [package]
 name = "wascap"
-version = "0.5.2"
+version = "0.6.0"
 authors = ["Kevin Hoffman <alothien@gmail.com>"]
 edition = "2018"
 description = "Wascap - WebAssembly Standard Capabilities. Library for extracting, embedding, and validating claims"
 license = "Apache-2.0"
-homepage = "https://github.com/wascc"
+homepage = "https://github.com/wasmcloud"
 documentation = "https://docs.rs/wascap"
 readme = "README.md"
 keywords = ["jwt", "crypto", "ed25519", "security", "webassembly"]

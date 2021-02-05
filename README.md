@@ -1,5 +1,5 @@
 ![crates.io](https://img.shields.io/crates/v/wascap.svg)&nbsp;
-![Rust](https://github.com/wascc/wascap/workflows/Rust/badge.svg)&nbsp;
+![Rust](https://github.com/wasmcloud/wascap/workflows/Rust/badge.svg)&nbsp;
 ![license](https://img.shields.io/crates/l/wascap.svg)
 
 # WASCAP
@@ -11,7 +11,7 @@ If you just want the CLI that signs and examines capabilities claims, then you c
 $ cargo install wascap --features "cli"
 ```
 
-While there are some standard, well-known claims already defined in the library (such as `wascc:messaging` and `wascc:keyvalue`), you can add custom claims in your own namespaces.
+While there are some standard, well-known claims already defined in the library (such as `wasmcloud:messaging` and `wasmcloud:keyvalue`), you can add custom claims in your own namespaces.
 
 The following example illustrates embedding a new set of claims into a WebAssembly module, then extracting, validating, and examining those claims:
 

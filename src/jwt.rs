@@ -8,8 +8,8 @@ use nkeys::KeyPair;
 use serde::de::DeserializeOwned;
 use serde::Serialize;
 use serde_json::{from_str, to_string};
-use std::time::{Duration, SystemTime, UNIX_EPOCH};
 use std::collections::HashMap;
+use std::time::{Duration, SystemTime, UNIX_EPOCH};
 
 const HEADER_TYPE: &str = "jwt";
 const HEADER_ALGORITHM: &str = "Ed25519";
@@ -86,7 +86,7 @@ pub struct CapabilityProvider {
     #[serde(rename = "ver", skip_serializing_if = "Option::is_none")]
     pub ver: Option<String>,
     /// The file hashes that correspond to the achitecture-OS target triples for this provider.
-    pub target_hashes: HashMap<String, String>
+    pub target_hashes: HashMap<String, String>,
 }
 
 /// The claims metadata corresponding to an account
@@ -223,7 +223,9 @@ impl WascapEntity for Actor {
 
 impl WascapEntity for CapabilityProvider {
     fn name(&self) -> String {
-        self.name.as_ref().unwrap_or(&"Unnamed Provider".to_string())
+        self.name
+            .as_ref()
+            .unwrap_or(&"Unnamed Provider".to_string())
             .to_string()
     }
 }
@@ -294,9 +296,11 @@ impl Claims<CapabilityProvider> {
         vendor: String,
         rev: Option<i32>,
         ver: Option<String>,
-        hashes: HashMap<String, String>
+        hashes: HashMap<String, String>,
     ) -> Claims<CapabilityProvider> {
-        Self::with_dates(name, issuer, subject, capid, vendor, rev, ver, hashes, None, None)
+        Self::with_dates(
+            name, issuer, subject, capid, vendor, rev, ver, hashes, None, None,
+        )
     }
 
     pub fn with_dates(
@@ -318,14 +322,14 @@ impl Claims<CapabilityProvider> {
                 rev,
                 ver,
                 target_hashes: hashes,
-                vendor
+                vendor,
             }),
             expires,
             id: nuid::next(),
             issued_at: since_the_epoch().as_secs(),
             issuer,
             subject,
-            not_before
+            not_before,
         }
     }
 }
@@ -638,7 +642,7 @@ impl CapabilityProvider {
         vendor: String,
         rev: Option<i32>,
         ver: Option<String>,
-        hashes: HashMap<String, String>
+        hashes: HashMap<String, String>,
     ) -> CapabilityProvider {
         CapabilityProvider {
             target_hashes: hashes,
@@ -646,7 +650,7 @@ impl CapabilityProvider {
             capid,
             vendor,
             rev,
-            ver
+            ver,
         }
     }
 }
@@ -683,8 +687,8 @@ impl Invocation {
 mod test {
     use super::{Account, Actor, Claims, ErrorKind, Invocation, KeyPair, Operator};
     use crate::caps::{KEY_VALUE, LOGGING, MESSAGING};
-    use crate::jwt::{since_the_epoch, ClaimsBuilder, CapabilityProvider};
     use crate::jwt::validate_token;
+    use crate::jwt::{since_the_epoch, CapabilityProvider, ClaimsBuilder};
     use std::collections::HashMap;
 
     #[test]
@@ -776,7 +780,7 @@ mod test {
             id: nuid::next(),
             metadata: Some(Invocation::new(
                 "wasmbus://M1234/DeliverMessage",
-                "wasmbus://wascc/messaging/default",
+                "wasmbus://wasmcloud/messaging/default",
                 "abc",
             )),
             expires: None,
@@ -902,20 +906,27 @@ mod test {
             .issuer(&account.public_key())
             .with_metadata(CapabilityProvider::new(
                 "Test Provider".to_string(),
-                "wascc:testing".to_string(),
-                "waSCC Internal".to_string(),
+                "wasmcloud:testing".to_string(),
+                "wasmCloud Internal".to_string(),
                 Some(1),
                 Some("v0.0.1".to_string()),
                 hashes,
-            )).build();
+            ))
+            .build();
 
         let encoded = claims.encode(&account).unwrap();
         let decoded: Claims<CapabilityProvider> = Claims::decode(&encoded).unwrap();
         assert!(validate_token::<CapabilityProvider>(&encoded).is_ok());
         assert_eq!(decoded.issuer, account.public_key());
         assert_eq!(decoded.subject, provider.public_key());
-        assert_eq!(decoded.metadata.as_ref().unwrap().vendor, "waSCC Internal");
-        assert_eq!(decoded.metadata.as_ref().unwrap().capid, "wascc:testing");
+        assert_eq!(
+            decoded.metadata.as_ref().unwrap().vendor,
+            "wasmCloud Internal"
+        );
+        assert_eq!(
+            decoded.metadata.as_ref().unwrap().capid,
+            "wasmcloud:testing"
+        );
     }
 
     #[test]
