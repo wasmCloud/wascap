@@ -15,7 +15,7 @@ const HEADER_TYPE: &str = "jwt";
 const HEADER_ALGORITHM: &str = "Ed25519";
 
 /// A structure containing a JWT and its associated decoded claims
-#[derive(Debug, Serialize, Deserialize, PartialEq)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 pub struct Token<T> {
     pub jwt: String,
     pub claims: Claims<T>,
