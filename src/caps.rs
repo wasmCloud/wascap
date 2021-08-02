@@ -1,12 +1,12 @@
 //! A set of standard names for capabilities that can be provided by a host
-pub const MESSAGING: &str = "wasmcloud:messaging";
-pub const KEY_VALUE: &str = "wasmcloud:keyvalue";
-pub const HTTP_SERVER: &str = "wasmcloud:httpserver";
-pub const HTTP_CLIENT: &str = "wasmcloud:httpclient";
 pub const BLOB: &str = "wasmcloud:blobstore";
+pub const HTTP_CLIENT: &str = "wasmcloud:httpclient";
+pub const HTTP_SERVER: &str = "wasmcloud:httpserver";
+pub const KEY_VALUE: &str = "wasmcloud:keyvalue";
+pub const MESSAGING: &str = "wasmcloud:messaging";
 pub const EVENTSTREAMS: &str = "wasmcloud:eventstreams";
-pub const EXTRAS: &str = "wasmcloud:extras";
-pub const LOGGING: &str = "wasmcloud:logging";
+pub const EXTRAS: &str = "wasmcloud:builtin:extras";
+pub const LOGGING: &str = "wasmcloud:builtin:logging";
 
 use std::collections::HashMap;
 
