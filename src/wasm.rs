@@ -7,11 +7,6 @@ use crate::{
 };
 use data_encoding::HEXUPPER;
 use nkeys::KeyPair;
-// use parity_wasm::{
-//     deserialize_buffer,
-//     elements::{CustomSection, Module, Serialize},
-//     serialize,
-// };
 use ring::digest::{Context, Digest, SHA256};
 use std::{
     io::{Read, Write},
