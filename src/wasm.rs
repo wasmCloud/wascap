@@ -2,7 +2,7 @@
 
 use crate::{
     errors::{self, ErrorKind},
-    jwt::{Actor, Claims, Token},
+    jwt::{Actor, Claims, Token, MIN_WASCAP_INTERNAL_REVISION},
     Result,
 };
 use data_encoding::HEXUPPER;
@@ -33,7 +33,10 @@ pub fn extract_claims(contents: impl AsRef<[u8]>) -> Result<Option<Token<Actor>>
                     let claims: Claims<Actor> = Claims::decode(&jwt)?;
                     let hash = compute_hash_without_jwt(contents.as_ref())?;
                     if let Some(ref meta) = claims.metadata {
-                        if meta.module_hash != hash {
+                        if meta.module_hash != hash
+                            && claims.wascap_revision.unwrap_or_default()
+                                >= MIN_WASCAP_INTERNAL_REVISION
+                        {
                             return Err(errors::new(ErrorKind::InvalidModuleHash));
                         } else {
                             return Ok(Some(Token { jwt, claims }));
@@ -171,7 +174,7 @@ mod test {
     use super::*;
     use crate::{
         caps::{KEY_VALUE, LOGGING, MESSAGING},
-        jwt::{Actor, Claims},
+        jwt::{Actor, Claims, WASCAP_INTERNAL_REVISION},
     };
     use base64::decode;
 
@@ -205,6 +208,7 @@ mod test {
             issuer: kp.public_key(),
             subject: "test.wasm".to_string(),
             not_before: None,
+            wascap_revision: Some(WASCAP_INTERNAL_REVISION),
         };
         let modified_bytecode = embed_claims(&dec_module, &claims, &kp).unwrap();
         println!(
@@ -245,6 +249,7 @@ mod test {
             issuer: kp.public_key(),
             subject: "test.wasm".to_string(),
             not_before: None,
+            wascap_revision: Some(WASCAP_INTERNAL_REVISION),
         };
         let modified_bytecode = embed_claims(&dec_module, &claims, &kp).unwrap();
         println!(
