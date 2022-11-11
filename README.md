@@ -2,7 +2,12 @@
 ![Rust](https://github.com/wasmcloud/wascap/workflows/Rust/badge.svg)&nbsp;
 ![license](https://img.shields.io/crates/l/wascap.svg)
 
-# WASCAP
+# ⚠️ Compatibility Warning
+Hashes computed and embedded into `.wasm` modules using a version of wascap < `0.9.0` are **_not_** compatible with the hashes computed by version `0.9.0` and up. In other words, if you have modules that were signed by the "old" wascap and you want them to work going forward, you'll need to re-sign them with 0.9.0.
+
+This compatibility error will show up as a validation failure when a wasmCloud host attempts to load an actor.
+
+# wasmCloud Capabilities
 
 In the [wasmCloud](https://wasmcloud.dev) host runtime, each actor securely declares the set of capabilities it requires. This library is used to embed, extract, and validate JSON Web Tokens (JWT) containing these capability attestations, as well as the hash of the `wasm` file and a provable issuer for verifying module provenance.
 
@@ -49,28 +54,17 @@ The `Ed25519` key functionality is provided by the [nkeys](https://docs.rs/nkeys
 The `wash` CLI allows you to examine and sign WebAssembly files from a terminal prompt:
 
 ```terminal
- $ wash claims inspect examples/signed_loop.wasm
- ╔════════════════════════════════════════════════════════════════════════╗
- ║                          Secure Actor - Module                         ║
- ╠═════════════╦══════════════════════════════════════════════════════════╣
- ║ Account     ║ ACCHS57D3P2VEON5MQCJM4YA34GYBDFZR3IBG5EQNUONIHBO5X4NIURC ║
- ╠═════════════╬══════════════════════════════════════════════════════════╣
- ║ Module      ║ MBQ2RC3BARXFWTBFW5UJ6J3QSAVYJ7D64Z5LRCPR3UI44F65Q3OMNGYM ║
- ╠═════════════╬══════════════════════════════════════════════════════════╣
- ║ Expires     ║                                                    never ║
- ╠═════════════╬══════════════════════════════════════════════════════════╣
- ║ Can Be Used ║                                              immediately ║
- ╠═════════════╬══════════════════════════════════════════════════════════╣
- ║ Version     ║                                                1.0.0 (0) ║
- ╠═════════════╩══════════════════════════════════════════════════════════╣
- ║                              Capabilities                              ║
- ╠════════════════════════════════════════════════════════════════════════╣
- ║ K/V Store                                                              ║
- ║ Messaging                                                              ║
- ║ HTTP Client                                                            ║
- ║ HTTP Server                                                            ║
- ╠════════════════════════════════════════════════════════════════════════╣
- ║                                  Tags                                  ║
- ╠════════════════════════════════════════════════════════════════════════╣
- ║ None                                                                   ║
- ╚════════════════════════════════════════════════════════════════════════╝
+ $ wash claims inspect echo_s.wasm
+
+                               Echo - Module
+  Account       ACM7TOENKEIO6Q6J66FX53AKXRHH6TH2WZ6K6SZQULNSWLDUIQHSRRSS
+  Module        MC2N2ERC4J7GGMVEMH2TYY73YXYZT2BJK2VGFNYWV26K3KOSVALIFUIB
+  Expires                                                          never
+  Can Be Used                                                immediately
+  Version                                                       None (0)
+  Call Alias                                                   (Not set)
+                               Capabilities
+  HTTP Server
+                                   Tags
+  None
+```
