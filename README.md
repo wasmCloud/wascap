@@ -2,10 +2,8 @@
 ![Rust](https://github.com/wasmcloud/wascap/workflows/Rust/badge.svg)&nbsp;
 ![license](https://img.shields.io/crates/l/wascap.svg)
 
-# ⚠️ Compatibility Warning
-Hashes computed and embedded into `.wasm` modules using a version of wascap < `0.9.0` are **_not_** compatible with the hashes computed by version `0.9.0` and up. In other words, if you have modules that were signed by the "old" wascap and you want them to work going forward, you'll need to re-sign them with 0.9.0.
-
-This compatibility error will show up as a validation failure when a wasmCloud host attempts to load an actor.
+# ℹ️ Compatibility Information
+The hashes computed with v`0.9.0` and later of wascap are not compatible with the hashes signed by prior versions. As a result, modules signed with older versions of wascap will _not_ have their module hashes validated (they'll be ignored). Once the module has been signed with `0.9.0` or greater, it will go back to having its module hash verified.
 
 # wasmCloud Capabilities
 
