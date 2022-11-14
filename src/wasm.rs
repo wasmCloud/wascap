@@ -14,6 +14,8 @@ use std::{
 };
 use wasmparser::BinaryReaderError;
 const SECS_PER_DAY: u64 = 86400;
+const SECTION_JWT: &str = "jwt";
+const SECTION_WC_JWT: &str = "wasmcloud_jwt";
 
 /// Extracts a set of claims from the raw bytes of a WebAssembly module. In the case where no
 /// JWT is discovered in the module, this function returns `None`.
@@ -28,7 +30,7 @@ pub fn extract_claims(contents: impl AsRef<[u8]>) -> Result<Option<Token<Actor>>
     for payload in parser.parse_all(contents.as_ref()) {
         match payload? {
             wasmparser::Payload::CustomSection(reader) => {
-                if reader.name() == "jwt" {
+                if reader.name() == SECTION_JWT || reader.name() == SECTION_WC_JWT {
                     let jwt = String::from_utf8(reader.data().to_vec())?;
                     let claims: Claims<Actor> = Claims::decode(&jwt)?;
                     let hash = compute_hash_without_jwt(contents.as_ref())?;
@@ -72,7 +74,7 @@ pub fn embed_claims(orig_bytecode: &[u8], claims: &Claims<Actor>, kp: &KeyPair) 
 
     let encoded = claims.encode(kp)?;
     let encvec = encoded.as_bytes().to_vec();
-    wasm_gen::write_custom_section(&mut bytes, "jwt", &encvec);
+    wasm_gen::write_custom_section(&mut bytes, SECTION_WC_JWT, &encvec);
 
     Ok(bytes)
 }
@@ -157,7 +159,7 @@ fn compute_hash_without_jwt(modbytes: &[u8]) -> Result<String> {
                     .extend_from_slice(reader.read().map_err(|e| BinaryReaderError::from(e))?.data);
             }
             CustomSection(reader) => {
-                if reader.name() != "jwt" {
+                if reader.name() != SECTION_JWT && reader.name() != SECTION_WC_JWT {
                     binary.extend_from_slice(reader.data());
                 }
             }
