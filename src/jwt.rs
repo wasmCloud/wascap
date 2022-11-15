@@ -175,9 +175,9 @@ pub struct Claims<T> {
     #[serde(rename = "wascap", skip_serializing_if = "Option::is_none")]
     pub metadata: Option<T>,
 
-    /// Revision/version number for wascap to allow for compatibility checks
+    /// Internal revision number used to aid in parsing and validating claims
     #[serde(rename = "wascap_revision", skip_serializing_if = "Option::is_none")]
-    pub wascap_revision: Option<u32>,
+    pub(crate) wascap_revision: Option<u32>,
 }
 
 /// The result of the validation process perform on a JWT

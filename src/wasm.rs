@@ -9,10 +9,11 @@ use data_encoding::HEXUPPER;
 use nkeys::KeyPair;
 use ring::digest::{Context, Digest, SHA256};
 use std::{
-    io::{Read, Write},
+    io::Read,
     time::{SystemTime, UNIX_EPOCH},
 };
 use wasmparser::BinaryReaderError;
+use wasmparser::Payload::*;
 const SECS_PER_DAY: u64 = 86400;
 const SECTION_JWT: &str = "jwt";
 const SECTION_WC_JWT: &str = "wasmcloud_jwt";
@@ -61,8 +62,7 @@ pub fn extract_claims(contents: impl AsRef<[u8]>) -> Result<Option<Token<Actor>>
 /// parsers or interpreters. Returns a vector of bytes representing the new WebAssembly module which can
 /// be saved to a `.wasm` file
 pub fn embed_claims(orig_bytecode: &[u8], claims: &Claims<Actor>, kp: &KeyPair) -> Result<Vec<u8>> {
-    let mut bytes = Vec::new();
-    bytes.write_all(orig_bytecode)?;
+    let mut bytes = orig_bytecode.to_vec();
 
     let hash = compute_hash_without_jwt(orig_bytecode)?;
     let mut claims = (*claims).clone();
@@ -144,7 +144,6 @@ fn compute_hash_without_jwt(modbytes: &[u8]) -> Result<String> {
     let parser = wasmparser::Parser::new(0);
 
     for payload in parser.parse_all(modbytes) {
-        use wasmparser::Payload::*;
         match payload? {
             CodeSectionEntry(fb) => {
                 let mut rdr = fb.get_binary_reader();
