@@ -33,7 +33,6 @@ pub fn extract_claims(contents: impl AsRef<[u8]>) -> Result<Option<Token<Actor>>
                 if reader.name() == SECTION_JWT || reader.name() == SECTION_WC_JWT {
                     let jwt = String::from_utf8(reader.data().to_vec())?;
                     let claims: Claims<Actor> = Claims::decode(&jwt)?;
-                    //let hash = compute_hash_without_jwt(contents.as_ref())?;
                     if let Some(ref meta) = claims.metadata {
                         if meta.module_hash != target_hash
                             && claims.wascap_revision.unwrap_or_default()
