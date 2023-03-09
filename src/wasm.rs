@@ -57,7 +57,7 @@ pub fn extract_claims(contents: impl AsRef<[u8]>) -> Result<Option<Token<Actor>>
                     return Err(errors::new(ErrorKind::InvalidAlgorithm));
                 }
             }
-            _ => {} 
+            _ => {}
         }
     }
     Ok(None)
@@ -170,12 +170,6 @@ pub(crate) fn strip_custom_section(buf: &[u8]) -> Result<Vec<u8>> {
     }
 
     Ok(output)
-    // let mut m = walrus::Module::from_buffer(buf)
-    //     .map_err(|e| errors::new(ErrorKind::WasmElement(e.to_string())))?;
-    // m.customs.remove_raw(SECTION_JWT);
-    // m.customs.remove_raw(SECTION_WC_JWT);
-
-    // Ok(m.emit_wasm())
 }
 
 fn since_the_epoch() -> std::time::Duration {
