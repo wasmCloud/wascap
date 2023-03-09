@@ -57,25 +57,7 @@ pub fn extract_claims(contents: impl AsRef<[u8]>) -> Result<Option<Token<Actor>>
                     return Err(errors::new(ErrorKind::InvalidAlgorithm));
                 }
             }
-            _ => {} // wasmparser::Payload::CustomSection(reader) => {
-                    //     if reader.name() == SECTION_JWT || reader.name() == SECTION_WC_JWT {
-                    //         let jwt = String::from_utf8(reader.data().to_vec())?;
-                    //         let claims: Claims<Actor> = Claims::decode(&jwt)?;
-                    //         if let Some(ref meta) = claims.metadata {
-                    //             if meta.module_hash != target_hash
-                    //                 && claims.wascap_revision.unwrap_or_default()
-                    //                     >= MIN_WASCAP_INTERNAL_REVISION
-                    //             {
-                    //                 return Err(errors::new(ErrorKind::InvalidModuleHash));
-                    //             } else {
-                    //                 return Ok(Some(Token { jwt, claims }));
-                    //             }
-                    //         } else {
-                    //             return Err(errors::new(ErrorKind::InvalidAlgorithm));
-                    //         }
-                    //     }
-                    // }
-                    // _ => {}
+            _ => {} 
         }
     }
     Ok(None)
