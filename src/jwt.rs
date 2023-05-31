@@ -289,6 +289,7 @@ impl WascapEntity for Invocation {
 }
 
 impl Claims<Account> {
+    /// Creates a new non-expiring Claims wrapper for metadata representing an account
     pub fn new(
         name: String,
         issuer: String,
@@ -298,6 +299,7 @@ impl Claims<Account> {
         Self::with_dates(name, issuer, subject, None, None, additional_keys)
     }
 
+    /// Creates a new Claims wrapper for metadata representing an account, with optional valid before and expiration dates
     pub fn with_dates(
         name: String,
         issuer: String,
@@ -323,6 +325,7 @@ impl Claims<Account> {
 }
 
 impl Claims<CapabilityProvider> {
+    /// Creates a new non-expiring Claims wrapper for metadata representing a capability provider
     #[allow(clippy::too_many_arguments)]
     pub fn new(
         name: String,
@@ -339,15 +342,16 @@ impl Claims<CapabilityProvider> {
         )
     }
 
-    pub fn with_prov_full(
+    /// Creates a new Claims non-expiring wrapper for metadata representing a capability provider, with optional valid before and expiration dates
+    pub fn with_provider(
         issuer: String,
         subject: String,
         not_before: Option<u64>,
         expires: Option<u64>,
-        provclaims: CapabilityProvider,
+        provider: CapabilityProvider,
     ) -> Claims<CapabilityProvider> {
         Claims {
-            metadata: Some(provclaims),
+            metadata: Some(provider),
             expires,
             id: nuid::next(),
             issued_at: since_the_epoch().as_secs(),
@@ -358,6 +362,7 @@ impl Claims<CapabilityProvider> {
         }
     }
 
+    /// Creates a new Claims wrapper for metadata representing a capability provider, with optional valid before and expiration dates
     #[allow(clippy::too_many_arguments)]
     pub fn with_dates(
         name: String,
@@ -393,6 +398,7 @@ impl Claims<CapabilityProvider> {
 }
 
 impl Claims<Operator> {
+    /// Creates a new non-expiring Claims wrapper for metadata representing an operator
     pub fn new(
         name: String,
         issuer: String,
@@ -402,6 +408,7 @@ impl Claims<Operator> {
         Self::with_dates(name, issuer, subject, None, None, additional_keys)
     }
 
+    /// Creates a new Claims wrapper for metadata representing an operator, with optional valid before and expiration dates
     pub fn with_dates(
         name: String,
         issuer: String,
@@ -427,6 +434,7 @@ impl Claims<Operator> {
 }
 
 impl Claims<Cluster> {
+    /// Creates a new non-expiring Claims wrapper for metadata representing a cluster
     pub fn new(
         name: String,
         issuer: String,
@@ -436,6 +444,7 @@ impl Claims<Cluster> {
         Self::with_dates(name, issuer, subject, None, None, additional_keys)
     }
 
+    /// Creates a new Claims wrapper for metadata representing a cluster, with optional valid before and expiration dates
     pub fn with_dates(
         name: String,
         issuer: String,
@@ -461,6 +470,7 @@ impl Claims<Cluster> {
 }
 
 impl Claims<Actor> {
+    /// Creates a new non-expiring Claims wrapper for metadata representing an actor
     #[allow(clippy::too_many_arguments)]
     pub fn new(
         name: String,
@@ -478,6 +488,7 @@ impl Claims<Actor> {
         )
     }
 
+    /// Creates a new Claims wrapper for metadata representing an actor, with optional valid before and expiration dates
     #[allow(clippy::too_many_arguments)]
     pub fn with_dates(
         name: String,
@@ -506,6 +517,7 @@ impl Claims<Actor> {
 }
 
 impl Claims<Invocation> {
+    /// Creates a new non-expiring Claims wrapper for metadata representing an invocation
     pub fn new(
         issuer: String,
         subject: String,
@@ -516,6 +528,7 @@ impl Claims<Invocation> {
         Self::with_dates(issuer, subject, None, None, target_url, origin_url, hash)
     }
 
+    /// Creates a new Claims wrapper for metadata representing an invocation, with optional valid before and expiration dates
     pub fn with_dates(
         issuer: String,
         subject: String,
@@ -580,7 +593,7 @@ where
         self
     }
 
-    /// Sets the appropriate metadata for this claims type (e.g. `Actor`, `Operator`, `CapabilityProvider` or `Account`)
+    /// Sets the appropriate metadata for this claims type (e.g. `Actor`, `Operator`, `Invocation`, `CapabilityProvider` or `Account`)
     pub fn with_metadata(&mut self, metadata: T) -> &mut Self {
         self.claims.metadata = Some(metadata);
         self
