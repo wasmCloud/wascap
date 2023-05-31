@@ -96,6 +96,9 @@ pub struct CapabilityProvider {
     pub ver: Option<String>,
     /// The file hashes that correspond to the achitecture-OS target triples for this provider.
     pub target_hashes: HashMap<String, String>,
+    /// If the provider chooses, it can supply a JSON schma that describes its expected link configuration
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub config_schema: Option<serde_json::Value>,
 }
 
 /// The claims metadata corresponding to an account
@@ -336,6 +339,25 @@ impl Claims<CapabilityProvider> {
         )
     }
 
+    pub fn with_prov_full(
+        issuer: String,
+        subject: String,
+        not_before: Option<u64>,
+        expires: Option<u64>,
+        provclaims: CapabilityProvider,
+    ) -> Claims<CapabilityProvider> {
+        Claims {
+            metadata: Some(provclaims),
+            expires,
+            id: nuid::next(),
+            issued_at: since_the_epoch().as_secs(),
+            issuer,
+            subject,
+            not_before,
+            wascap_revision: Some(WASCAP_INTERNAL_REVISION),
+        }
+    }
+
     #[allow(clippy::too_many_arguments)]
     pub fn with_dates(
         name: String,
@@ -357,6 +379,7 @@ impl Claims<CapabilityProvider> {
                 ver,
                 target_hashes: hashes,
                 vendor,
+                config_schema: None,
             }),
             expires,
             id: nuid::next(),
@@ -757,6 +780,7 @@ impl CapabilityProvider {
             vendor,
             rev,
             ver,
+            config_schema: None,
         }
     }
 }
@@ -1059,6 +1083,72 @@ mod test {
         assert_eq!(
             decoded.metadata.as_ref().unwrap().capid,
             "wasmcloud:testing"
+        );
+    }
+
+    #[test]
+    fn provider_round_trip_with_schema() {
+        let raw_schema = r#"
+        {
+            "$id": "https://wasmcloud.com/httpserver.schema.json",
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "title": "HTTP server provider schema",
+            "type": "object",
+            "properties": {
+              "port": {
+                "type": "integer",
+                "description": "The port number to use for the web server",
+                "minimum": 4000,
+                "maximum": 10000
+              },
+              "lastName": {
+                "type": "string",
+                "description": "Someone's last name."
+              },
+              "easterEgg": {
+                "description": "Indicates whether or not the easter egg should be displayed",
+                "type": "boolean"                
+              }
+            }
+          }
+        "#;
+        let account = KeyPair::new_account();
+        let provider = KeyPair::new_service();
+
+        let mut hashes = HashMap::new();
+        hashes.insert("aarch64-linux".to_string(), "abc12345".to_string());
+
+        let schema = serde_json::from_str::<serde_json::Value>(raw_schema).unwrap();
+        let mut hashes = HashMap::new();
+        hashes.insert("aarch64-linux".to_string(), "abc12345".to_string());
+        let claims = ClaimsBuilder::new()
+            .subject(&provider.public_key())
+            .issuer(&account.public_key())
+            .with_metadata(CapabilityProvider {
+                name: Some("Test Provider".to_string()),
+                capid: "wasmcloud:testing".to_string(),
+                vendor: "wasmCloud Internal".to_string(),
+                rev: Some(1),
+                ver: Some("v0.0.1".to_string()),
+                target_hashes: hashes,
+                config_schema: Some(schema),
+            })
+            .build();
+
+        let encoded = claims.encode(&account).unwrap();
+        let decoded: Claims<CapabilityProvider> = Claims::decode(&encoded).unwrap();
+        assert!(validate_token::<CapabilityProvider>(&encoded).is_ok());
+        assert_eq!(decoded.issuer, account.public_key());
+        assert_eq!(decoded.subject, provider.public_key());
+        assert_eq!(
+            decoded
+                .metadata
+                .as_ref()
+                .unwrap()
+                .config_schema
+                .as_ref()
+                .unwrap()["properties"]["port"]["minimum"],
+            4000
         );
     }
 
