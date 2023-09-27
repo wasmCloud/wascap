@@ -231,7 +231,10 @@ mod test {
 
     #[test]
     fn strip_custom() {
-        let dec_module = BASE64.decode(WASM_BASE64.as_bytes()).unwrap();
+        let mut f = File::open("./fixtures/guest.component.wasm").unwrap();
+        let mut buffer = Vec::new();
+        f.read_to_end(&mut buffer).unwrap();
+
         let kp = KeyPair::new_account();
         let claims = Claims {
             metadata: Some(Actor::new(
@@ -251,7 +254,7 @@ mod test {
             not_before: None,
             wascap_revision: Some(WASCAP_INTERNAL_REVISION),
         };
-        let modified_bytecode = embed_claims(&dec_module, &claims, &kp).unwrap();
+        let modified_bytecode = embed_claims(&buffer, &claims, &kp).unwrap();
 
         super::strip_custom_section(&modified_bytecode).unwrap();
     }
