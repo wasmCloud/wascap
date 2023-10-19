@@ -56,9 +56,6 @@
 #[macro_use]
 extern crate serde_derive;
 
-#[macro_use]
-extern crate lazy_static;
-
 /// Wascap-specific result type
 pub type Result<T> = std::result::Result<T, errors::Error>;
 pub use errors::Error;
